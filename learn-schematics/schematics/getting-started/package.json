@@ -7,7 +7,7 @@
   ],
   "author": "",
   "license": "MIT",
-  "schematics": "./src/collection.json",
+  "schematics": "./collection.json",
   "peerDependencies": {
     "@angular-devkit/core": "^7.0.5",
     "@angular-devkit/schematics": "^7.0.5",
