@@ -166,13 +166,23 @@ npm install -D sync-glob
 
 ## Using the Schematic
 
+Now that the schematic is linked to the workspace (via `npm link <PATH_TO_THE_SCHEMATIC_BUILD_OUTPUT>`), you can use the schematic and target one of the schematics in the collection.
+
 ```ts
-ng generate @proofs/my-schematics-proof:my-full-schematic --name="test"
+ng generate @angularlicious/getting-started:my-full-schematic --name="test"
+```
+
+The output of the command is (4) files based on the Schematic and the templates. 
+
+```ts
+ng generate @angularlicious/getting-started:my-full-schematic --name="test"
     My Full Schematic: {"name":"test","index":1}
             My Other Schematic: {"option":true}
                         My Schematic: {"option":true}
 CREATE hola (5 bytes)
 CREATE allo (5 bytes)
+CREATE test2 (34 bytes)
+CREATE test1 (18 bytes)
 ```
 
 ## Resources
