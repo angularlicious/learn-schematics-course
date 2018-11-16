@@ -1,44 +1,199 @@
-# LearnSchematics
+# How to Add Angular Schematic Projects to the Angular Workspace (or Nx)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) using [Nrwl Nx](https://nrwl.io/nx).
+The Angular development environment since version 6 is a `Workspace` by default. The workspace allows for a `monorepo` that can contain multiple `application` projects as well as one ore more shared `library` projects. But the question is, "What kind of project is a Schematic?".
 
-## Nrwl Extensions for Angular (Nx)
+Is a Schematic project a `library`? It is not shared by `application` projects and referenced as a module import. It is not an application - it is not hosted, it does not load and use other Angular modules. An Angular `Schematic` project appears to be something of its own type for the following reasons/characteristics:
 
-<a href="https://nrwl.io/nx"><img src="https://preview.ibb.co/mW6sdw/nx_logo.png"></a>
+* tool
+* utility
+* used during development as a `devDependency`
+    * create/new items in a project
+    * update existing items in a project
+* not an application `dependency`
+* can be installed globally
 
-Nx is an open source toolkit for enterprise Angular applications.
+A Schematic project needs a development environment that has the capability to not only develop a schematic, test a schematic, but also to be used by either `library` or `application` project types within an Angular Workspace. So, let's get started.
 
-Nx is designed to help you create and build enterprise grade Angular applications. It provides an opinionated approach to application project structure and patterns.
+Our goals are:
 
-## Quick Start & Documentation
+* add a schematic project to an Nx Angular Worksapce environment
+* build a schematic to an output directory in preparation of publishing to a package repository
+    * not mixing build output with source files
+    * include `README.md` for the output.
 
-[Watch a 5-minute video on how to get started with Nx.](http://nrwl.io/nx)
+## Schematic Tooling
 
-## Generate your first application
+Install the `schematics-cli` from the `@angular-devkit` using npm. This cli has [schematics](https://github.com/angular/angular-cli/tree/master/packages/schematics/schematics) for creating schematics. It contains (2) schematics in the collection that will allow you to create:
 
-Run `ng generate app myapp` to generate an application. When using Nx, you can create multiple applications and libraries in the same CLI workspace. Read more [here](http://nrwl.io/nx).
+* blank: a blank schematic with no implementation
+* schematics: a sample of (3) schematics in a collection
 
-## Development server
+These are good to start with to get familiar with the structure and concepts of schematics in general.
 
-Run `ng serve --project=myapp` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```ts
+npm install global @angular-devkit/schematics-cli
+schematics --help
+schematics --list-schematics
+```
 
-## Code scaffolding
+## Getting Started
 
-Run `ng generate component component-name --project=myapp` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Let's use the [Nrwl.io Nx](https://nrwl.io/nx/guide-getting-started) extension and schematics for our workspace.
 
-## Build
+```ts
+npm install -g @nrwl/schematics @nrwl/nx
+```
 
-Run `ng build --project=myapp` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Create a new workspace environment using the Nrwl.io Nx extension - which is a set of schematics that use and provide additional features to the core [Angular Schematics](https://github.com/angular/angular-cli/tree/master/packages/schematics/angular).
 
-## Running unit tests
+Use the following command to create a new Nx workspace. 
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```ts
+create-nx-workspace learn-schematics --npm-scope=angularlicious
+```
 
-## Running end-to-end tests
+## Create a Schematic
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+Create a new folder in the root of the workspace called `schematics`. This is a container for a new project type that is not currently supported or has a project type when using the `angular.json` configuration file.
 
-## Further help
+```ts
+mkdir schematics
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Use the terminal and navigate to the `schematics` folder. Use the command to create a sample
+
+```ts
+schematics schematic --name=learn-schematics
+```
+
+The new schematics project has a `tsconfig.json` file to configure the build for Typescript. Update the configuration to include an `outDir` property that points the output to a `dist` folder. 
+
+```json
+"outDir": "./../../dist/schematics/getting-started",
+```
+
+In order to output the build of a specific schematic project to an output folder, update the build scripts of the workspace to include:
+
+```json
+"build:schematics": "npm run build-schematic:getting-started",
+"build-schematic:getting-started": "tsc -p ./schematics/getting-started/tsconfig.json && npm run copy-schematic:getting-started-templates && npm run copy-schematic:getting-started-types && npm run copy-schematic:getting-started-package && npm run copy-schematic:getting-started-collection  && npm run copy-schematic:getting-started-readme",
+"copy-schematic:getting-started-templates": "sync-glob -d false 'schematics/getting-started/src/**/*/files/*' dist/schematics/getting-started/",
+"copy-schematic:getting-started-types": "sync-glob -d false 'schematics/getting-started/src/**/*/schema.*' dist/schematics/getting-started/",
+"copy-schematic:getting-started-package": "sync-glob -d false 'schematics/getting-started/package.json' dist/schematics/getting-started",
+"copy-schematic:getting-started-collection": "sync-glob -d false 'schematics/getting-started/src/collection.json' dist/schematics/getting-started",
+"copy-schematic:getting-started-readme": "sync-glob -d false 'schematics/getting-started/README.md' dist/schematics/getting-started",  
+```
+
+The `package.json` file in the `Schematic` project - contains a configuration that points to the `collection.json` file for the specified schematic.
+
+* remove the `scripts` section from the `package.json` file
+* update the `depdendencies` section to `peerDependencies`
+* remove `src` from the `schematics` property: 
+    * change `"schematics": "./src/collection.json",` 
+    * to `"schematics": "./collection.json",`
+
+```json
+{
+  "name": "@angularlicious/getting-started",
+  "version": "0.0.0",
+  "description": "A schematics",
+  "keywords": [
+    "schematics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "schematics": "./src/collection.json",
+  "peerDependencies": {
+    "@angular-devkit/core": "^7.0.5",
+    "@angular-devkit/schematics": "^7.0.5",
+    "@types/jasmine": "^2.6.0",
+    "@types/node": "^8.0.31",
+    "jasmine": "^2.8.0",
+    "typescript": "~3.1.6"
+  }
+}
+```
+
+Update the root `package.json` file in the workspace. Add the following (2) items to the `dependency` section. 
+
+```json
+"@angular-devkit/core": "^7.0.5",
+"@angular-devkit/schematics": "^7.0.5",
+```
+
+## Build Schematic
+
+Use the terminal and run the following command to build the schematics project. The output will be in the `dist` folder as defined in the `outDir` setting in the `tsconfig.json` file. 
+
+```ts
+npm run build:schematics
+```
+## Link the Schematic
+
+Typically, you would publish your schematic to a package repository so it can be used like other schematics - using a `npm install -g <YOUR-SCHEMATIC-NAME-HERE>`. 
+
+However, in our local workspace development environment, use the `npm link` command to load the build output into the `node_modules`.
+
+```ts
+npm link ./dist/schematics/getting-started
+```
+
+Attempting to link to the ouput of the build, will throw an error. It appears that we are missing some required artifacts for the schematic - the output is missing the `package.json` file.
+
+```ts
+5 verbose stack Error: ENOENT: no such file or directory, open '.\learn-schematics-course\learn-schematics\dist\schematics\@angularlicious\getting-started\package.json'
+```
+
+There are actually a set of required files that a schematic project will need - not just the output of the transpile of the (Typescript, *.ts) files. We'll need:
+
+* schema.* files
+    * used to define the available `options` for the schematic (i.e., the inputs).
+* templates (./files/*)
+    * if any templates are defined, they will need to be available as part of the schematic project as an asset.
+* package.json
+    * all published packages require a `package.json` file with a unique name, version and other information. 
+* README.md: include documentation for the specified schematic
+    * include details on how to use and test
+
+
+Add the following package to the workspace. 
+
+```ts
+npm install -D sync-glob
+```
+
+
+
+## Using the Schematic
+
+Now that the schematic is linked to the workspace (via `npm link <PATH_TO_THE_SCHEMATIC_BUILD_OUTPUT>`), you can use the schematic and target one of the schematics in the collection.
+
+```ts
+ng generate @angularlicious/getting-started:my-full-schematic --name="test"
+```
+
+The output of the command is (4) files based on the Schematic and the templates. 
+
+```ts
+ng generate @angularlicious/getting-started:my-full-schematic --name="test"
+    My Full Schematic: {"name":"test","index":1}
+            My Other Schematic: {"option":true}
+                        My Schematic: {"option":true}
+CREATE hola (5 bytes)
+CREATE allo (5 bytes)
+CREATE test2 (34 bytes)
+CREATE test1 (18 bytes)
+```
+
+## Resources
+
+## Examples of Schematics in the Real World.
+
+### Angular Dev-Kit Schematics
+
+* https://github.com/angular/angular-cli/tree/master/packages/schematics/schematics
+
+### Angular Schematics
+
+* https://github.com/angular/angular-cli/tree/master/packages/schematics/angular
+ 
