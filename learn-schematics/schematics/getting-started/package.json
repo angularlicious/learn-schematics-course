@@ -1,18 +1,14 @@
 {
-  "name": "getting-started",
+  "name": "@angularlicious/getting-started",
   "version": "0.0.0",
   "description": "A schematics",
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "npm run build && jasmine src/**/*_spec.js"
-  },
   "keywords": [
     "schematics"
   ],
   "author": "",
   "license": "MIT",
   "schematics": "./src/collection.json",
-  "dependencies": {
+  "peerDependencies": {
     "@angular-devkit/core": "^7.0.5",
     "@angular-devkit/schematics": "^7.0.5",
     "@types/jasmine": "^2.6.0",
