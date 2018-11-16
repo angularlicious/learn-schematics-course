@@ -6,6 +6,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:schematics": "npm run build-schematic:getting-started",
+    "build-schematic:getting-started": "tsc -p ./schematics/getting-started/tsconfig.json",
     "test": "ng test",
     "lint": "./node_modules/.bin/nx lint && ng lint",
     "e2e": "ng e2e",
