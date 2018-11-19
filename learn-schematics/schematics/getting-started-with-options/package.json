@@ -1,5 +1,5 @@
 {
-  "name": "getting-started-with-options",
+  "name": "@angularlicious/getting-started-with-options",
   "version": "0.0.0",
   "description": "A schematics",
   "scripts": {
@@ -11,7 +11,7 @@
   ],
   "author": "",
   "license": "MIT",
-  "schematics": "./src/collection.json",
+  "schematics": "./collection.json",
   "dependencies": {
     "@angular-devkit/core": "^7.0.5",
     "@angular-devkit/schematics": "^7.0.5",
