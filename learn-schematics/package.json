@@ -2,6 +2,7 @@
   "name": "learn-schematics",
   "version": "0.0.0",
   "license": "MIT",
+  "schematics": "./schematics/getting-started-with-debugging/src/collection.json",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -13,6 +14,9 @@
     "copy-schematic:getting-started-package": "sync-glob -d false 'schematics/getting-started/package.json' dist/schematics/getting-started",
     "copy-schematic:getting-started-collection": "sync-glob -d false 'schematics/getting-started/src/collection.json' dist/schematics/getting-started",
     "copy-schematic:getting-started-readme": "sync-glob -d false 'schematics/getting-started/README.md' dist/schematics/getting-started",
+    "build-schematic:getting-started-with-debugging": "tsc -p ./schematics/getting-started-with-debugging/tsconfig.json",
+    "test-schematic:getting-started-with-debugging": "npm run build-schematic:getting-started-with-debugging  && jasmine schematics/getting-started-with-debugging/src/**/*_spec.js",
+    "schematic:getting-started-with-debugging": "schematics .:tree-debug --project=web-app-with-options --name=DEBUG",
     "build-schematic:getting-started-with-options": "tsc -p ./schematics/getting-started-with-options/tsconfig.json && npm run copy-schematic:getting-started-with-options-templates && npm run copy-schematic:getting-started-with-options-types && npm run copy-schematic:getting-started-with-options-package && npm run copy-schematic:getting-started-with-options-collection  && npm run copy-schematic:getting-started-with-options-readme && npm run npm-link:getting-started-with-options",
     "copy-schematic:getting-started-with-options-templates": "sync-glob -d false 'schematics/getting-started-with-options/src/**/*/files/*' dist/schematics/getting-started-with-options/",
     "copy-schematic:getting-started-with-options-types": "sync-glob -d false 'schematics/getting-started-with-options/src/**/*/schema.*' dist/schematics/getting-started-with-options/",
@@ -20,6 +24,7 @@
     "copy-schematic:getting-started-with-options-collection": "sync-glob -d false 'schematics/getting-started-with-options/src/collection.json' dist/schematics/getting-started-with-options",
     "copy-schematic:getting-started-with-options-readme": "sync-glob -d false 'schematics/getting-started-with-options/README.md' dist/schematics/getting-started-with-options",
     "npm-link:getting-started-with-options": "npm link ./dist/schematics/getting-started-with-options",
+    "schematic:getting-started-with-options": "schematics .:my-full-schematic --project=web-app-with-options --name=hello",
     "test": "ng test",
     "lint": "./node_modules/.bin/nx lint && ng lint",
     "e2e": "ng e2e",
@@ -61,6 +66,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.10.0",
+    "@angular-devkit/schematics-cli": "^0.10.6",
     "@angular/cli": "7.0.1",
     "@angular/compiler-cli": "^7.0.0",
     "@angular/language-service": "^7.0.0",
