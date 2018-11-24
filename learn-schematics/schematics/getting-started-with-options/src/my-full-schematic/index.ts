@@ -30,7 +30,7 @@ export function setupOptions(host: Tree, options: any, context: SchematicContext
     context.logger.error(`The [project] option is missing.`);
     throw new SchematicsException('Option (project) is required.');
   }
-  context.logger.info(`Preparing to retrieve the project using: ${options.project}`);
+  context.logger.info (`Preparing to retrieve the project using: ${options.project}`);
   const project = <WorkspaceProject>workspace.projects[options.project];
 
   if (options.path === undefined) {
@@ -54,6 +54,9 @@ export default function (options: any): Rule {
 
     setupOptions(host, options, context);
 
+    // setup a variable [currentDateTime] programmatically --> used in template;
+    options.currentDateTime = new Date(Date.now()).toUTCString();
+
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
       template({
@@ -64,5 +67,5 @@ export default function (options: any): Rule {
     ]);
 
     return branchAndMerge(mergeWith(templateSource));
-  };
+  };    
 }

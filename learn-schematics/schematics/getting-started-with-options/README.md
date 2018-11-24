@@ -58,10 +58,16 @@ schematics schematic --name=getting-started-with-options
 ```
 
 #### tsconfig.json
-This configuration is used by the `tsc` compiler. The only addition to the default configuration is the `outDir`.
+This configuration is used by the `tsc` compiler. The only addition to the default configuration is the `outDir`. Configure and use the `outDir` when you are ready to create a `publishable` package for your 
 
 * Use `outDir` to define the location of compiled output.
     * The compiler will only output the `*.js` files.
+    * The build script will need to copy other file types:
+      * package.json
+      * collection.json
+      * schema.json
+      * schema.d.ts
+      * README.md
 
 ```json
 {
@@ -472,7 +478,6 @@ import { getWorkspace } from '@schematics/angular/utility/config'
 import { buildDefaultPath } from '@schematics/angular/utility/project'
 import { WorkspaceProject } from '@schematics/angular/utility/workspace-models';
 ```
-`
 
 The `index.ts` needs to be updated to use the options for the schematic. But there are some new and useful functions
 
