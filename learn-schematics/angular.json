@@ -2,7 +2,158 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "",
-  "projects": {},
+  "projects": {
+    "web-app-with-options": {
+      "root": "apps/web-app-with-options/",
+      "sourceRoot": "apps/web-app-with-options/src",
+      "projectType": "application",
+      "prefix": "angularlicious",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss",
+          "spec": false
+        },
+        "@schematics/angular:class": {
+          "spec": false
+        },
+        "@schematics/angular:directive": {
+          "spec": false
+        },
+        "@schematics/angular:guard": {
+          "spec": false
+        },
+        "@schematics/angular:module": {
+          "spec": false
+        },
+        "@schematics/angular:pipe": {
+          "spec": false
+        },
+        "@schematics/angular:service": {
+          "spec": false
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/web-app-with-options",
+            "index": "apps/web-app-with-options/src/index.html",
+            "main": "apps/web-app-with-options/src/main.ts",
+            "polyfills": "apps/web-app-with-options/src/polyfills.ts",
+            "tsConfig": "apps/web-app-with-options/tsconfig.app.json",
+            "assets": [
+              "apps/web-app-with-options/src/favicon.ico",
+              "apps/web-app-with-options/src/assets"
+            ],
+            "styles": [
+              "apps/web-app-with-options/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/web-app-with-options/src/environments/environment.ts",
+                  "with": "apps/web-app-with-options/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "web-app-with-options:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "web-app-with-options:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "web-app-with-options:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/web-app-with-options/src/test.ts",
+            "polyfills": "apps/web-app-with-options/src/polyfills.ts",
+            "tsConfig": "apps/web-app-with-options/tsconfig.spec.json",
+            "karmaConfig": "apps/web-app-with-options/karma.conf.js",
+            "styles": [
+              "apps/web-app-with-options/src/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "apps/web-app-with-options/src/favicon.ico",
+              "apps/web-app-with-options/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/web-app-with-options/tsconfig.app.json",
+              "apps/web-app-with-options/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "web-app-with-options-e2e": {
+      "root": "apps/web-app-with-options-e2e",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/web-app-with-options-e2e/protractor.conf.js",
+            "devServerTarget": "web-app-with-options:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "web-app-with-options:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/web-app-with-options-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "warnings": {
       "typescriptMismatch": false,
@@ -10,5 +161,6 @@
     },
     "defaultCollection": "@nrwl/schematics",
     "packageManager": "npm"
-  }
+  },
+  "defaultProject": "web-app-with-options"
 }

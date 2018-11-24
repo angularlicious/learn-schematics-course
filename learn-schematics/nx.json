@@ -7,5 +7,12 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
-  "projects": {}
+  "projects": {
+    "web-app-with-options": {
+      "tags": []
+    },
+    "web-app-with-options-e2e": {
+      "tags": []
+    }
+  }
 }

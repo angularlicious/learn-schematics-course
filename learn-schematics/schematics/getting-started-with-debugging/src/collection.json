@@ -1,0 +1,9 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "tree-debug": {
+      "description": "A schematic to demonstrate how to debug and view [Tree] details..",
+      "factory": "./tree-debug"
+    }
+  }
+}
