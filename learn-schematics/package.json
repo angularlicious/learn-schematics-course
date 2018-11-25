@@ -2,7 +2,7 @@
   "name": "learn-schematics",
   "version": "0.0.0",
   "license": "MIT",
-  "schematics": "./schematics/getting-started-with-debugging/src/collection.json",
+  "schematics": "./schematics/getting-started-with-options/src/collection.json",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
