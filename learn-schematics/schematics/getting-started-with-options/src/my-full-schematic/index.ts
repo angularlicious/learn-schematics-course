@@ -4,10 +4,8 @@ import {
   SchematicsException,
   Tree,
   apply,
-  filter,
   mergeWith,
   move,
-  noop,
   template,
   url,
   branchAndMerge,
@@ -17,6 +15,7 @@ import { parseName } from '@schematics/angular/utility/parse-name'
 import { getWorkspace } from '@schematics/angular/utility/config'
 import { buildDefaultPath } from '@schematics/angular/utility/project'
 import { WorkspaceProject } from '@schematics/angular/utility/workspace-models';
+import { FullSchematicOptions } from './schema';
 
 /**
  * Use to setup the target path using the specified options [project].
@@ -24,7 +23,7 @@ import { WorkspaceProject } from '@schematics/angular/utility/workspace-models';
  * @param options the current [options]
  * @param context the [SchematicContext]
  */
-export function setupOptions(host: Tree, options: any, context: SchematicContext) {
+export function setupOptions(host: Tree, options: FullSchematicOptions, context: SchematicContext) {
   const workspace = getWorkspace(host);
   if (!options.project) {
     context.logger.error(`The [project] option is missing.`);
@@ -39,8 +38,6 @@ export function setupOptions(host: Tree, options: any, context: SchematicContext
     context.logger.info(`The target path: ${options.path}`);
   }
 
-  options.type = !!options.type ? `.${options.type}` : '';
-
   const parsedPath = parseName(options.path, options.name);
   options.name = parsedPath.name;
   options.path = parsedPath.path;
@@ -49,16 +46,15 @@ export function setupOptions(host: Tree, options: any, context: SchematicContext
   return host;
 }
 
-export default function (options: any): Rule {
+export default function (options: FullSchematicOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
 
     setupOptions(host, options, context);
 
     // setup a variable [currentDateTime] programmatically --> used in template;
-    options.currentDateTime = new Date(Date.now()).toUTCString();
+    options.currentDateTime = new Date(Date.now());
 
     const templateSource = apply(url('./files'), [
-      options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
       template({
         ...strings,
         ...options,
