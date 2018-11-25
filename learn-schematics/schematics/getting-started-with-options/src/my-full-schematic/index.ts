@@ -39,8 +39,6 @@ export function setupOptions(host: Tree, options: FullSchematicOptions, context:
     context.logger.info(`The target path: ${options.path}`);
   }
 
-  // options.type = !!options.type ? `.${options.type}` : '';
-
   const parsedPath = parseName(options.path, options.name);
   options.name = parsedPath.name;
   options.path = parsedPath.path;

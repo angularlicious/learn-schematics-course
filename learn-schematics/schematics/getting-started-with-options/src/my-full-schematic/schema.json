@@ -23,6 +23,10 @@
       "description": "The name of the project.",
       "$default": {
         "$source": "projectName"
+      },
+      "currentDateTime": {
+        "type": "object",
+        "description": "Use to indicate the date of the schematic run (not required)."
       }
     },
     "currentDateTime": {

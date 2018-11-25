@@ -15,6 +15,7 @@ This sample project builds upon the sample `getting-started` project. We will ex
       - [schema.json](#schemajson)
       - [Templates](#templates)
   - [options: any[one]?](#options-anyone)
+  - [Strongly Typed Options](#strongly-typed-options)
   - [Resources](#resources)
 
 Create a new project in the `schematics` folder.
@@ -576,6 +577,164 @@ export default function (options: any): Rule {
     return branchAndMerge(mergeWith(templateSource));
   };
 }
+```
+
+## Strongly Typed Options
+
+Currently, The options are not strongly typed. In order to have strongly typed options, we will need to create an interface based upon the current schema file.  The following `interface` file is based upon the properties of the `schema.json`. 
+
+```ts
+
+export interface FullSchematicOptions {
+
+    /**
+     * Use to provide a name value for the schematic (required).
+     */
+    name: string;
+
+    /**
+     * Use to provide a specific path.
+     */
+    path: string;
+
+    /**
+     * Use to indicate the name of the project to apply the template changes (required).
+     */
+    project: string;
+
+    /**
+     * Use to indicate the time of the schematic run (value supplied during runtime).
+     */
+    currentDateTime: Date;
+}
+```
+
+Since the factory function was setting an option for the dynamic property `currentDateTime`, we'll need to update the `schema.json` file to include the property definition. This property is not required and the value is set during schematic runtime. However, if there was a console UI for this schematic/CLI, it may have the ability to set the `Date` value.
+
+```json
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "MyFullSchematicsSchema",
+  "title": "My Full Schematics Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the class.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the class.",
+      "visible": false
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      },
+      "currentDateTime": {
+        "type": "object",
+        "description": "Use to indicate the date of the schematic run (not required)."
+      }
+    }
+  },
+  "required": [
+    "name",
+    "project"
+  ]
+}
+
+```
+
+The factory function for the specified schematic can now import the type from the `schema.d.ts` file. Make sure to include this file in your source repository. It will be used when we publish the schematic and/or use it when we use `npm link`.
+
+```ts
+import { FullSchematicOptions } from './schema';
+```
+
+The factory function and the helper functions were updated to use the new strongly typed schema for the `options`. Using a typed options interface provides a safer development environment. You would not want any unsupported or rogue options slipped into the schematic.  
+
+>Note: the new signature has the `options` typed as `FullSchematicOptions`.
+>
+>`export function setupOptions(host: Tree, options: FullSchematicOptions, context: SchematicContext)`
+
+This is the final version of the factory function using the strongly-typed options interface. 
+
+```ts
+import {
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+  apply,
+  mergeWith,
+  move,
+  template,
+  url,
+  branchAndMerge,
+} from '@angular-devkit/schematics';
+import { strings } from '@angular-devkit/core';
+import { parseName } from '@schematics/angular/utility/parse-name'
+import { getWorkspace } from '@schematics/angular/utility/config'
+import { buildDefaultPath } from '@schematics/angular/utility/project'
+import { WorkspaceProject } from '@schematics/angular/utility/workspace-models';
+import { FullSchematicOptions } from './schema';
+
+/**
+ * Use to setup the target path using the specified options [project].
+ * @param host the current [Tree]
+ * @param options the current [options]
+ * @param context the [SchematicContext]
+ */
+export function setupOptions(host: Tree, options: FullSchematicOptions, context: SchematicContext) {
+  const workspace = getWorkspace(host);
+  if (!options.project) {
+    context.logger.error(`The [project] option is missing.`);
+    throw new SchematicsException('Option (project) is required.');
+  }
+  context.logger.info (`Preparing to retrieve the project using: ${options.project}`);
+  const project = <WorkspaceProject>workspace.projects[options.project];
+
+  if (options.path === undefined) {
+    context.logger.info(`Preparing to determine the target path.`);
+    options.path = buildDefaultPath(project);
+    context.logger.info(`The target path: ${options.path}`);
+  }
+
+  const parsedPath = parseName(options.path, options.name);
+  options.name = parsedPath.name;
+  options.path = parsedPath.path;
+
+  context.logger.info(`Finished options setup.`);
+  return host;
+}
+
+export default function (options: FullSchematicOptions): Rule {
+  return (host: Tree, context: SchematicContext) => {
+
+    setupOptions(host, options, context);
+
+    // setup a variable [currentDateTime] programmatically --> used in template;
+    options.currentDateTime = new Date(Date.now());
+
+    const templateSource = apply(url('./files'), [
+      template({
+        ...strings,
+        ...options,
+      }),
+      move(options.path),
+    ]);
+
+    return branchAndMerge(mergeWith(templateSource));
+  };    
+}
+
 ```
 
 ## Resources
