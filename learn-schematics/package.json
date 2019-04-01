@@ -24,7 +24,7 @@
     "copy-schematic:getting-started-with-options-collection": "sync-glob -d false 'schematics/getting-started-with-options/src/collection.json' dist/schematics/getting-started-with-options",
     "copy-schematic:getting-started-with-options-readme": "sync-glob -d false 'schematics/getting-started-with-options/README.md' dist/schematics/getting-started-with-options",
     "npm-link:getting-started-with-options": "npm link ./dist/schematics/getting-started-with-options",
-    "schematic:getting-started-with-options": "schematics .:my-full-schematic --project=web-app-with-options --name=hello",
+    "schematic:getting-started-with-options": "schematics .:my-full-schematic --project=web-app-with-options --name=hello --dry-run=false",
     "test": "ng test",
     "lint": "./node_modules/.bin/nx lint && ng lint",
     "e2e": "ng e2e",
