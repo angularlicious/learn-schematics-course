@@ -79,3 +79,4 @@ export default function (options: any): Rule {
     return branchAndMerge(mergeWith(templateSource));
   };
 }
+ 
